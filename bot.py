@@ -30,7 +30,7 @@ from telegram.ext import (
     filters,
     CallbackQueryHandler
 )
-
+from models import init_db
 from models import (
     Base,
     User,
@@ -39,7 +39,8 @@ from models import (
     HealthCertificate,
     Specialization,
     engine,
-    Session
+    Session,
+    init_db  # <--- add this
 )
 
 # Load environment variables
@@ -2540,16 +2541,17 @@ def shutdown_handler(signum, frame):
     scheduler.shutdown()
     sys.exit(0)
 
-
 signal.signal(signal.SIGINT, shutdown_handler)
 signal.signal(signal.SIGTERM, shutdown_handler)
-
 
 ##################
 # Main Execution
 ##################
 
 if __name__ == '__main__':
+    # Make sure tables exist before starting the bot
+    init_db()  # <-- Call init_db() here
+
     logger.info("شروع ربات...")
     try:
         application.run_polling()
